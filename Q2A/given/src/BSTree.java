@@ -6,34 +6,34 @@ import java.io.*;
 import java.util.*;
 
 public class BSTree {
-    
+
     Node root;
-    
+
     BSTree() {
         root = null;
     }
-    
+
     boolean isEmpty() {
         return (root == null);
     }
-    
+
     void clear() {
         root = null;
     }
-    
+
     void visit(Node p) {
         System.out.print("p.info: ");
         if (p != null) {
             System.out.println(p.info + " ");
         }
     }
-    
+
     void fvisit(Node p, RandomAccessFile f) throws Exception {
         if (p != null) {
             f.writeBytes(p.info + " ");
         }
     }
-    
+
     void breadth(Node p, RandomAccessFile f) throws Exception {
         if (p == null) {
             return;
@@ -52,7 +52,7 @@ public class BSTree {
             }
         }
     }
-    
+
     void preOrder(Node p, RandomAccessFile f) throws Exception {
         if (p == null) {
             return;
@@ -61,7 +61,7 @@ public class BSTree {
         preOrder(p.left, f);
         preOrder(p.right, f);
     }
-    
+
     void inOrder(Node p, RandomAccessFile f) throws Exception {
         if (p == null) {
             return;
@@ -70,7 +70,7 @@ public class BSTree {
         fvisit(p, f);
         inOrder(p.right, f);
     }
-    
+
     void postOrder(Node p, RandomAccessFile f) throws Exception {
         if (p == null) {
             return;
@@ -79,7 +79,7 @@ public class BSTree {
         postOrder(p.right, f);
         fvisit(p, f);
     }
-    
+
     void loadData(int k) { //do not edit this function
         String[] a = Lib.readLineToStrArray("data.txt", k);
         int[] b = Lib.readLineToIntArray("data.txt", k + 1);
@@ -102,7 +102,7 @@ public class BSTree {
         Node x = new Node(new Watermelon(xSource, xPrice, xType));
         if (root == null) { //this.isEmpty()
             root = x;
-            return;            
+            return;
         }
         Node f, p;
         p = root;
@@ -134,7 +134,7 @@ public class BSTree {
         if (p.info.type < 5) {
             fvisit(p, f);
         }
-        
+
         preOrder2(p.left, f);
         preOrder2(p.right, f);
     }
@@ -172,7 +172,7 @@ public class BSTree {
         //------------------------------------------------------------------------------------
         //void f2() – Perform pre-order traversal from the root but display to file f2.txt
         //nodes with type<5 only.
-        
+
         preOrder2(root, f);
 
         //------------------------------------------------------------------------------------
@@ -181,6 +181,17 @@ public class BSTree {
     }
 
 //=============================================================
+    int count(Node p, RandomAccessFile f) throws Exception {
+        int i = 0;
+        if (p == null) {
+            return i++;
+        }
+//        fvisit(p, f);
+        count(p.left, f);
+        count(p.right, f);
+        return i++;
+    }
+
     void f3() throws Exception {
         clear();
         loadData(9);
@@ -195,9 +206,12 @@ public class BSTree {
         //------------------------------------------------------------------------------------
         //void f3() – Suppose p is the 3rd node when performing the pre-order traversal of the tree.
         //Delete the node p  by copying. 
-
+        System.out.println(count(root, f));
+        if (count(root, f) != 3) {
+            count(root, f);
+        }
         //------------------------------------------------------------------------------------
-        preOrder(root, f);
+
         f.writeBytes("\r\n");
         f.close();
     }
@@ -219,7 +233,6 @@ public class BSTree {
         while (b.right != null) {
             b = b.right;
         }
-        
 
         //------------------------------------------------------------------------------------
         f.writeBytes(b.info + "\r\n");
@@ -236,7 +249,7 @@ public class BSTree {
             fvisit(p, f);
         }
         printLeaf(p.right, f);
-    }    
+    }
 
     void f5() throws Exception {
         clear();
@@ -260,7 +273,8 @@ public class BSTree {
         f.close();
     }
 //=============================================================
- void printInternal(Node p, RandomAccessFile f) throws Exception {
+
+    void printInternal(Node p, RandomAccessFile f) throws Exception {
         if (p == null) {
             return;
         }
@@ -269,7 +283,8 @@ public class BSTree {
         }
         printInternal(p.left, f);
         printInternal(p.right, f);
-    } 
+    }
+
     void f6() throws Exception {
         clear();
         loadData(21);
@@ -283,23 +298,25 @@ public class BSTree {
         f.writeBytes("\r\n");
         //------------------------------------------------------------------------------------
         //void f6() - Internal nodes
-Node b;
-        b=root;
+        Node b;
+        b = root;
         printInternal(b, f);
         //------------------------------------------------------------------------------------
         f.writeBytes("\r\n");
         f.close();
     }
 //=============================================================
+
     int height(Node p) throws Exception {
-    int l,r;    
-    if (p == null) {
+        int l, r;
+        if (p == null) {
             return 0;
-        }        
-        l=height(p.left)+1;
-        r=height(p.right)+1;
-        return l>r?l:r;
+        }
+        l = height(p.left) + 1;
+        r = height(p.right) + 1;
+        return l > r ? l : r;
     }
+
     void f7() throws Exception {
         clear();
         loadData(25);
@@ -311,13 +328,25 @@ Node b;
         RandomAccessFile f = new RandomAccessFile(fname, "rw");
         //------------------------------------------------------------------------------------
         //void f7() - height of the tree
-Node b;
-b=root;
+        Node b;
+        b = root;
         //
-        f.writeBytes(height(b)+"\r\n");
+        f.writeBytes(height(b) + "\r\n");
         f.close();
     }
 //=============================================================
+
+    void leafheight(Node p, RandomAccessFile f) throws Exception {
+        if (p == null) {
+            return;
+        }
+        printLeaf(p.left, f);
+        if (p.right == null && p.left == null) {
+            p.info.type += height(p);
+            fvisit(p, f);
+        }
+        printLeaf(p.right, f);
+    }
 
     void f8() throws Exception {
         clear();
@@ -332,7 +361,7 @@ b=root;
         f.writeBytes("\r\n");
         //------------------------------------------------------------------------------------
         //void f8() - tim nut la, cong type voi chieu cao cua cay
-
+        leafheight(root, f);
         //
         f.writeBytes("\r\n");
         f.close();
