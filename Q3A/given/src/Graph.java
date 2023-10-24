@@ -133,11 +133,35 @@ public class Graph {
 //===========================================================================
 //(2)===YOU CAN EDIT OR EVEN ADD NEW FUNCTIONS IN THE FOLLOWING PART========
 //===========================================================================
-    
-    
+    ArrayList<Integer> traversalEdges= new ArrayList<>();
+    int count=0;
+    void depth2(boolean[] visited, int k, RandomAccessFile f) throws Exception {
+        if (count>=4&&count<=8) {
+                    fvisit(k, f);
+                }       
+        visited[k] = true;
+        for (int i = 0; i < n; i++) {
+            if (!visited[i] && a[k][i] > 0) {
+                count++;
+                depth2(visited, i, f);
+            }
+        }
 
+    }
 
-   
+    void depth2(int k, RandomAccessFile f) throws Exception {
+        boolean[] visited = new boolean[20];
+        int i;
+        for (i = 0; i < n; i++) {
+            visited[i] = false;
+        }
+        for (i = 0; i < n; i++) {
+            if (!visited[i]) {
+                count++; 
+                depth2(visited, i, f);
+            }
+        }
+    }
 
     //Do not edit this function. Your task is to complete insert function above only.
     void f1() throws Exception {
@@ -154,17 +178,74 @@ public class Graph {
         /*You must keep statements pre-given in this function.
         Your task is to insert statements here, just after this comment,
         to complete the question in the exam paper.*/
+        depth2(n, f);
         
-
-
-
-
         //-------------------------------------------------------------------------------------
         f.writeBytes("\r\n");
         f.close();
     }
 
 //=================================================================
+    void dijkstra(RandomAccessFile f, int fro, int to) throws IOException {
+       int INF=99;
+       boolean [] S = new boolean[n];
+       int [] d = new int[n];
+       int [] p = new int[n];
+       int i,j,k,t;
+       for(i=0;i<n;i++) {
+          S[i]=false;
+          d[i]=a[fro][i];
+          p[i]=fro;
+       }
+       S[fro]=true;
+       
+       while(true) {
+         t=INF; k=-1;
+         for(i=0;i<n;i++) {
+           if(S[i]) continue;
+           if(d[i]<t) {
+             t=d[i];
+             k=i;
+           }
+         }
+           if(k==-1) {
+              System.out.println("No solution");
+              return;
+           }
+           // select k into the set S
+           S[k]=true;
+           if(k==to) break;
+           // update data
+           for(i=0;i<n;i++) {
+             if(S[i]) continue;
+             if(d[i]> d[k]+a[k][i]) {
+                 d[i]=d[k]+a[k][i];
+                 p[i]=k;
+             }
+           }
+         }
+       
+       MyStack s = new MyStack();
+       i=to;
+       while(true) {
+         s.push(i);
+         if(i==fro) break;
+         i=p[i];
+       }
+       i=s.pop();
+       System.out.println("Th shotest path is");
+       System.out.print(i);
+       f.writeByte(v[i]);
+       while(!s.isEmpty()) {
+          
+          i=s.pop();
+          System.out.print(" -> " + i);
+          f.writeBytes("  " + v[i]);
+        }
+       System.out.println();
+       System.out.println("The shortest distance is " + d[to]);
+       f.writeBytes("\n" + d[to]+"\n");
+    }
     void f2() throws Exception {
         loadData(13);
         String fname = "f2.txt";
@@ -178,11 +259,8 @@ public class Graph {
         /*You must keep statements pre-given in this function.
         Your task is to insert statements here, just after this comment,
         to complete the question in the exam paper.*/
-        
-
-
-
-
+        dijkstra(f, 2, 7);
+        dijkstra(f, 4, 6);
         //-------------------------------------------------------------------------------------
         f.writeBytes("\r\n");
         f.close();
